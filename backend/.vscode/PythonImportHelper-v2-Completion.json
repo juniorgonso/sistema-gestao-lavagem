@@ -1,0 +1,106 @@
+[
+    {
+        "label": "Flask",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "jsonify",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "request",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "CORS",
+        "importPath": "flask_cors",
+        "description": "flask_cors",
+        "isExtraImport": true,
+        "detail": "flask_cors",
+        "documentation": {}
+    },
+    {
+        "label": "sqlite3",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sqlite3",
+        "description": "sqlite3",
+        "detail": "sqlite3",
+        "documentation": {}
+    },
+    {
+        "label": "get_db_connection",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def get_db_connection():\n    conn = sqlite3.connect('banco.db')\n    conn.row_factory = sqlite3.Row # Faz o banco retornar dados como dicionários\n    return conn\n# Inicializando o Banco de Dados\ndef init_db():\n    conn = get_db_connection()\n    cursor = conn.cursor()\n    # Tabelas\n    cursor.execute('''CREATE TABLE IF NOT EXISTS usuarios (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE NOT NULL, password TEXT NOT NULL)''')",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "init_db",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def init_db():\n    conn = get_db_connection()\n    cursor = conn.cursor()\n    # Tabelas\n    cursor.execute('''CREATE TABLE IF NOT EXISTS usuarios (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE NOT NULL, password TEXT NOT NULL)''')\n    cursor.execute('''CREATE TABLE IF NOT EXISTS servicos (id INTEGER PRIMARY KEY AUTOINCREMENT, placa TEXT NOT NULL, modelo TEXT NOT NULL, tipo_lavagem TEXT NOT NULL, status TEXT DEFAULT 'Pendente')''')\n    # Criando um usuário padrão para você conseguir fazer Login depois\n    cursor.execute(\"SELECT * FROM usuarios WHERE username = 'admin'\")\n    if cursor.fetchone() is None:\n        cursor.execute(\"INSERT INTO usuarios (username, password) VALUES ('admin', 'admin')\")",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "login",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def login():\n    dados = request.get_json()\n    conn = get_db_connection()\n    usuario = conn.execute(\"SELECT * FROM usuarios WHERE username = ? AND password = ?\", (dados['username'], dados['password'])).fetchone()\n    conn.close()\n    if usuario:\n        return jsonify({\"mensagem\": \"Login com sucesso!\", \"sucesso\": True}), 200\n    else:\n        return jsonify({\"mensagem\": \"Usuário ou senha incorretos!\", \"sucesso\": False}), 401\n# 2. Rota para LISTAR os serviços (Carros na fila)",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "listar_servicos",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def listar_servicos():\n    conn = get_db_connection()\n    servicos = conn.execute(\"SELECT * FROM servicos\").fetchall()\n    conn.close()\n    return jsonify([dict(ix) for ix in servicos]), 200\n# 3. Rota para ADICIONAR um novo serviço de lavagem\n@app.route('/servicos', methods=['POST'])\ndef adicionar_servico():\n    dados = request.get_json()\n    conn = get_db_connection()",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "adicionar_servico",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def adicionar_servico():\n    dados = request.get_json()\n    conn = get_db_connection()\n    conn.execute(\"INSERT INTO servicos (placa, modelo, tipo_lavagem) VALUES (?, ?, ?)\", \n                 (dados['placa'], dados['modelo'], dados['tipo_lavagem']))\n    conn.commit()\n    conn.close()\n    return jsonify({\"mensagem\": \"Serviço adicionado com sucesso!\"}), 201\n# 4. Rota para EXCLUIR/FINALIZAR um serviço\n@app.route('/servicos/<int:id>', methods=['DELETE'])",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "deletar_servico",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def deletar_servico(id):\n    conn = get_db_connection()\n    conn.execute(\"DELETE FROM servicos WHERE id = ?\", (id,))\n    conn.commit()\n    conn.close()\n    return jsonify({\"mensagem\": \"Serviço finalizado e removido da lista!\"}), 200\nif __name__ == '__main__':\n    init_db()\n    app.run(debug=True, host='0.0.0.0', port=5000)",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "app",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "app = Flask(__name__)\nCORS(app)\n# Função para conectar ao banco de forma mais fácil nas rotas\ndef get_db_connection():\n    conn = sqlite3.connect('banco.db')\n    conn.row_factory = sqlite3.Row # Faz o banco retornar dados como dicionários\n    return conn\n# Inicializando o Banco de Dados\ndef init_db():\n    conn = get_db_connection()",
+        "detail": "app",
+        "documentation": {}
+    }
+]

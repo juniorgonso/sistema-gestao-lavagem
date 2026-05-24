@@ -1,0 +1,7 @@
+# Ignorar arquivos pesados do Ionic
+app-lavagem/node_modules/
+app-lavagem/.angular/
+
+# Ignorar ambiente virtual do Python
+backend/venv/
+backend/__pycache__/
